@@ -170,8 +170,8 @@
             if(day === 0) { alert("Domingos cerrado"); select.innerHTML = '<option disabled selected>Cerrado</option>'; return; }
             
             let slots = (day >= 1 && day <= 5) ? 
-                ["04:00 PM","05:00 PM","06:00 PM","07:00 PM","08:00 PM"] : 
-                ["11:00 AM","12:00 PM","01:00 PM","02:00 PM","03:00 PM","04:00 PM"];
+            ["04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM", "08:00 PM"] : 
+            ["11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM", "04:00 PM"];
             
             select.innerHTML = '<option disabled selected>Selecciona hora</option>';
             slots.forEach(s => {
@@ -203,22 +203,57 @@
     const d = document.getElementById('uDate').value;
     const t = document.getElementById('uTime').value;
 
-    if(!n || !d || !t) return alert("Llena todos los campos");
+    if(!n || !d || !t) {
+        alert("¡Epa! Llena todos los campos primero, carnal.");
+        return;
+    }
 
-    const msg = `💎 *EDWARD BARBER | RESERVACIÓN VIP* 💎\n\n👤 *CLIENTE:* ${n.toUpperCase()}\n📅 *FECHA:* ${d}\n⏰ *ORA:* ${t}`;
+    // --- DISEÑO DE MENSAJE PROFESIONAL ---
+    const msg = `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                `  💈 *EDWARD BARBER SHOP* 💈\n` +
+                `      _Reservación Confirmada_\n` +
+                `━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+                `👤 *CLIENTE:* ${n.toUpperCase()}\n` +
+                `📅 *FECHA:* ${d}\n` +
+                `⏰ *HORA:* ${t}\n\n` +
+                `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                `📍 _Zumpango Del Rio_\n` +
+                `✅ _Favor de llegar 5 min antes._`;
 
     try {
-        // 1. Guarda en Firebase
+        // 1. Guardar en la base de datos
         await fetch(DB_URL + "citas.json", { 
             method: 'POST', 
             body: JSON.stringify({ name: n, date: d, time: t }) 
         });
 
-        // 2. Abre WhatsApp con el mensaje automático
-        // ESTA ES LA LÍNEA CLAVE, CÓPIALA TAL CUAL:
+        // 2. Envío automático (El cliente no tiene que copiar nada)
         window.location.href = `${GROUP_LINK}?text=${encodeURIComponent(msg)}`;
 
     } catch (e) {
+        window.location.href = GROUP_LINK;
+    }
+    try {
+        // 1. Guardar en tu base de datos
+        await fetch(DB_URL + "citas.json", { 
+            method: 'POST', 
+            body: JSON.stringify({ name: n, date: d, time: t }) 
+        });
+
+        // 2. INTENTO DE COPIADO (Por si el cliente quiere pegarlo manual)
+        try {
+            await navigator.clipboard.writeText(msg);
+        } catch (err) {
+            console.log("El cel bloqueó el copiado, pero no hay pex.");
+        }
+
+        // 3. ENVÍO AUTOMÁTICO (La opción que no falla)
+        // Esto abre WhatsApp y ya tiene el texto escrito en la barrita gris.
+        const waUrl = `${GROUP_LINK}?text=${encodeURIComponent(msg)}`;
+        window.location.href = waUrl;
+
+    } catch (e) {
+        // Si falla el internet, que al menos los mande al grupo pelón
         window.location.href = GROUP_LINK;
     }
 }
