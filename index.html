@@ -199,23 +199,29 @@
         }
 
         async function sendToWhatsApp() {
-            const n = document.getElementById('uName').value;
-            const d = document.getElementById('uDate').value;
-            const t = document.getElementById('uTime').value;
-            
-            const msg = `💎 *EDWARD BARBER | RESERVACIÓN VIP* 💎\n━━━━━━━━━━━━━━━━━━\n👤 *CLIENTE:* ${n.toUpperCase()}\n📅 *FECHA:* ${d.split('-').reverse().join('/')}\n⏰ *HORA:* ${t}\n━━━━━━━━━━━━━━━━━━\n⚠️ *Llegar 5 min antes o se cancela.* ✂️🔥`;
+    const n = document.getElementById('uName').value;
+    const d = document.getElementById('uDate').value;
+    const t = document.getElementById('uTime').value;
 
-            try {
-                // Guardar en Firebase
-                await fetch(DB_URL + "citas.json", { method: 'POST', body: JSON.stringify({ name: n, date: d, time: t }) });
-                // Copiar mensaje
-                await navigator.clipboard.writeText(msg);
-                alert("✅ ¡DATOS COPIADOS! \n\nAhora pégalos en el grupo de WhatsApp.");
-                window.location.href = GROUP_LINK;
-            } catch (e) {
-                window.location.href = GROUP_LINK;
-            }
-        }
+    if(!n || !d || !t) return alert("Llena todos los campos");
+
+    const msg = `💎 *EDWARD BARBER | RESERVACIÓN VIP* 💎\n\n👤 *CLIENTE:* ${n.toUpperCase()}\n📅 *FECHA:* ${d}\n⏰ *ORA:* ${t}`;
+
+    try {
+        // 1. Guarda en Firebase
+        await fetch(DB_URL + "citas.json", { 
+            method: 'POST', 
+            body: JSON.stringify({ name: n, date: d, time: t }) 
+        });
+
+        // 2. Abre WhatsApp con el mensaje automático
+        // ESTA ES LA LÍNEA CLAVE, CÓPIALA TAL CUAL:
+        window.location.href = `${GROUP_LINK}?text=${encodeURIComponent(msg)}`;
+
+    } catch (e) {
+        window.location.href = GROUP_LINK;
+    }
+}
 
         // --- ADMIN ---
         function openAdmin() { if(prompt("CLAVE:") === PASS) { document.getElementById('admin-panel').classList.add('active'); renderAdmin(); } }
