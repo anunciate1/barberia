@@ -208,30 +208,32 @@
         return;
     }
 
-    // Este formato es 100% compatible. Sin caracteres raros, solo emojis claros.
-    const msg = `💈 *EDWARD BARBER SHOP* 💈\n` +
-                `------------------------------------------\n` +
-                `✅ *RESERVACIÓN CONFIRMADA*\n\n` +
-                `👤 *CLIENTE:* ${n.toUpperCase()}\n` +
-                `📅 *FECHA:* ${d}\n` +
-                `⏰ *HORA:* ${t}\n\n` +
-                `📍 *LUGAR:* Zumpango Del Rio\n` +
-                `------------------------------------------\n\n` +
-                `⚡ _Favor de llegar 5 min antes por favor._`;
+    // Usamos emojis directos que WhatsApp sí entiende
+    const msg = "💈 *EDWARD BARBER SHOP* 💈\n" +
+                "------------------------------------------\n" +
+                "✅ *RESERVACIÓN CONFIRMADA*\n\n" +
+                "👤 *CLIENTE:* " + n.toUpperCase() + "\n" +
+                "📅 *FECHA:* " + d + "\n" +
+                "⏰ *HORA:* " + t + "\n" +
+                "📍 *LUGAR:* Zumpango Del Rio\n" +
+                "------------------------------------------\n\n" +
+                "⚡ _Favor de llegar 5 min antes por favor._";
 
     try {
-        // Guarda en Firebase (tu lógica original)
+        // Guarda en Firebase (tu sistema actual)
         await fetch(DB_URL + "citas.json", { 
             method: 'POST', 
             body: JSON.stringify({ name: n, date: d, time: t }) 
         });
 
-        // Envío directo a tu número sin intermediarios
-        window.location.href = `https://wa.me/527471957726?text=${encodeURIComponent(msg)}`;
+        // Usamos api.whatsapp.com que es más estable para mandar iconos
+        const finalUrl = "https://api.whatsapp.com/send?phone=527471957726&text=" + encodeURIComponent(msg);
+        window.location.href = finalUrl;
 
     } catch (e) {
-        // Si falla el guardado, igual manda el mensaje para no perder la venta
-        window.location.href = `https://wa.me/527471957726?text=${encodeURIComponent(msg)}`;
+        // Si falla el sistema, igual abre tu WhatsApp
+        const backupUrl = "https://api.whatsapp.com/send?phone=527471957726&text=" + encodeURIComponent(msg);
+        window.location.href = backupUrl;
     }
 }
         // --- ADMIN ---
