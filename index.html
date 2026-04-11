@@ -208,28 +208,29 @@
         return;
     }
 
-    // Formato moderno: Menos símbolos raros, más claridad
-    const msg = `*💈 EDWARD BARBER SHOP 💈*\n` +
-                `________________________________\n\n` +
+    // Este formato es 100% compatible. Sin caracteres raros, solo emojis claros.
+    const msg = `💈 *EDWARD BARBER SHOP* 💈\n` +
+                `------------------------------------------\n` +
                 `✅ *RESERVACIÓN CONFIRMADA*\n\n` +
                 `👤 *CLIENTE:* ${n.toUpperCase()}\n` +
                 `📅 *FECHA:* ${d}\n` +
                 `⏰ *HORA:* ${t}\n\n` +
                 `📍 *LUGAR:* Zumpango Del Rio\n` +
-                `________________________________\n\n` +
+                `------------------------------------------\n\n` +
                 `⚡ _Favor de llegar 5 min antes por favor._`;
 
     try {
-        // Se mantiene tu guardado en la base de datos
+        // Guarda en Firebase (tu lógica original)
         await fetch(DB_URL + "citas.json", { 
             method: 'POST', 
             body: JSON.stringify({ name: n, date: d, time: t }) 
         });
 
-        // Envío directo a WhatsApp
+        // Envío directo a tu número sin intermediarios
         window.location.href = `https://wa.me/527471957726?text=${encodeURIComponent(msg)}`;
 
     } catch (e) {
+        // Si falla el guardado, igual manda el mensaje para no perder la venta
         window.location.href = `https://wa.me/527471957726?text=${encodeURIComponent(msg)}`;
     }
 }
