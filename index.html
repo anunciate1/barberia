@@ -208,7 +208,7 @@
         return;
     }
 
-    // --- DISEÑO DE MENSAJE PREMIUM MODERNO ---
+    // --- DISEÑO PREMIUM ---
     const msg = `╔════════════════════╗\n` +
                 `      💈 *EDWARD BARBER SHOP* 💈\n` +
                 `╚════════════════════╝\n\n` +
@@ -221,30 +221,36 @@
                 `   ✨ _Favor de llegar 5 min antes._\n` +
                 `   ✨ _¡Te esperamos para el cambio!_`;
 
+    // --- PASO 1: COPIAR AL PORTAPAPELES (Inmediato para que el cel no lo bloquee) ---
     try {
-        // 1. Guardar en tu base de datos (Importante para el control)
+        await navigator.clipboard.writeText(msg);
+        console.log("Copiado con éxito");
+    } catch (err) {
+        // Si el navegador es muy viejo, usamos un método alternativo
+        const textArea = document.createElement("textarea");
+        textArea.value = msg;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+    }
+
+    // --- PASO 2: GUARDAR EN BASE DE DATOS Y ENVIAR ---
+    try {
+        // Guardamos en Firebase
         await fetch(DB_URL + "citas.json", { 
             method: 'POST', 
             body: JSON.stringify({ name: n, date: d, time: t }) 
         });
 
-        // 2. Intento de copiado (Solo por si el navegador lo permite)
-        try {
-            await navigator.clipboard.writeText(msg);
-        } catch (err) {
-            console.log("Copiado manual no disponible en este cel.");
-        }
-
-        // 3. Envío directo a WhatsApp con formato seguro
-        const waUrl = `${GROUP_LINK}?text=${encodeURIComponent(msg)}`;
-        window.location.href = waUrl;
+        // Mandamos a WhatsApp
+        window.location.href = `${GROUP_LINK}?text=${encodeURIComponent(msg)}`;
 
     } catch (e) {
-        // Si falla el internet o Firebase, lo manda directo al chat
+        // Si falla internet, igual lo mandamos a WhatsApp
         window.location.href = `${GROUP_LINK}?text=${encodeURIComponent(msg)}`;
     }
 }
-
         // --- ADMIN ---
         function openAdmin() { if(prompt("CLAVE:") === PASS) { document.getElementById('admin-panel').classList.add('active'); renderAdmin(); } }
         function closeAdmin() { document.getElementById('admin-panel').classList.remove('active'); }
