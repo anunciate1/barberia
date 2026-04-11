@@ -227,33 +227,18 @@
             body: JSON.stringify({ name: n, date: d, time: t }) 
         });
 
-        // 2. Envío automático (El cliente no tiene que copiar nada)
-        window.location.href = `${GROUP_LINK}?text=${encodeURIComponent(msg)}`;
-
-    } catch (e) {
-        window.location.href = GROUP_LINK;
-    }
-    try {
-        // 1. Guardar en tu base de datos
-        await fetch(DB_URL + "citas.json", { 
-            method: 'POST', 
-            body: JSON.stringify({ name: n, date: d, time: t }) 
-        });
-
-        // 2. INTENTO DE COPIADO (Por si el cliente quiere pegarlo manual)
+        // 2. Intento de copiado automático
         try {
             await navigator.clipboard.writeText(msg);
         } catch (err) {
-            console.log("El cel bloqueó el copiado, pero no hay pex.");
+            console.log("Copiado bloqueado por el cel, pero no hay pex.");
         }
 
-        // 3. ENVÍO AUTOMÁTICO (La opción que no falla)
-        // Esto abre WhatsApp y ya tiene el texto escrito en la barrita gris.
-        const waUrl = `${GROUP_LINK}?text=${encodeURIComponent(msg)}`;
-        window.location.href = waUrl;
+        // 3. Envío automático a WhatsApp
+        window.location.href = `${GROUP_LINK}?text=${encodeURIComponent(msg)}`;
 
     } catch (e) {
-        // Si falla el internet, que al menos los mande al grupo pelón
+        // Si algo falla, al menos mandarlos al enlace del grupo
         window.location.href = GROUP_LINK;
     }
 }
