@@ -208,38 +208,40 @@
         return;
     }
 
-    // --- DISEÑO DE MENSAJE PROFESIONAL ---
-    const msg = `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
-                `  💈 *EDWARD BARBER SHOP* 💈\n` +
-                `      _Reservación Confirmada_\n` +
-                `━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
-                `👤 *CLIENTE:* ${n.toUpperCase()}\n` +
-                `📅 *FECHA:* ${d}\n` +
-                `⏰ *HORA:* ${t}\n\n` +
-                `━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
-                `📍 _Zumpango Del Rio_\n` +
-                `✅ _Favor de llegar 5 min antes._`;
+    // --- DISEÑO DE MENSAJE PREMIUM MODERNO ---
+    const msg = `╔════════════════════╗\n` +
+                `      💈 *EDWARD BARBER SHOP* 💈\n` +
+                `╚════════════════════╝\n\n` +
+                `   *RESERVACIÓN CONFIRMADA*\n\n` +
+                `   👤 *CLIENTE:* _${n.toUpperCase()}_\n` +
+                `   📅 *FECHA:* _${d}_\n` +
+                `   ⏰ *HORA:* _${t}_\n\n` +
+                `   📍 *UBICACIÓN:* Zumpango Del Rio\n` +
+                `   ━━━━━━━━━━━━━━━━━━━━\n` +
+                `   ✨ _Favor de llegar 5 min antes._\n` +
+                `   ✨ _¡Te esperamos para el cambio!_`;
 
     try {
-        // 1. Guardar en la base de datos
+        // 1. Guardar en tu base de datos (Importante para el control)
         await fetch(DB_URL + "citas.json", { 
             method: 'POST', 
             body: JSON.stringify({ name: n, date: d, time: t }) 
         });
 
-        // 2. Intento de copiado automático
+        // 2. Intento de copiado (Solo por si el navegador lo permite)
         try {
             await navigator.clipboard.writeText(msg);
         } catch (err) {
-            console.log("Copiado, PERO SI NO SE COPEA EL MENSAJE MANDA UNA CAPTURA DE LA CITA AGENDADA.");
+            console.log("Copiado manual no disponible en este cel.");
         }
 
-        // 3. Envío automático a WhatsApp
-        window.location.href = `${GROUP_LINK}?text=${encodeURIComponent(msg)}`;
+        // 3. Envío directo a WhatsApp con formato seguro
+        const waUrl = `${GROUP_LINK}?text=${encodeURIComponent(msg)}`;
+        window.location.href = waUrl;
 
     } catch (e) {
-        // Si algo falla, al menos mandarlos al enlace del grupo
-        window.location.href = GROUP_LINK;
+        // Si falla el internet o Firebase, lo manda directo al chat
+        window.location.href = `${GROUP_LINK}?text=${encodeURIComponent(msg)}`;
     }
 }
 
