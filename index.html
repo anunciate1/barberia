@@ -96,8 +96,8 @@
     <div class="booking-card" id="mainCard">
         <div id="closed-overlay">
             <i class="fas fa-door-closed" style="font-size: 3rem; color: var(--neon-main); margin-bottom: 15px;"></i>
-            <h2 class="dynamic-text" style="font-family:'Orbitron';">SERVICIO CERRADO</h2>
-            <p style="font-size: 0.9rem; color: #888; margin-top: 10px;">CERRADO TEMPORALMENTE.</p>
+            <h2 class="dynamic-text" style="font-family:'Orbitron';">BARBERIA CERRADO</h2>
+            <p style="font-size: 0.9rem; color: #888; margin-top: 10px;">BARBERIA CERRADA TEMPORALMENTE.</p>
         </div>
 
         <h3 class="dynamic-text" style="font-family:'Orbitron';">💈 AGENDA TU CITA 💈</h3>
@@ -108,7 +108,7 @@
         <div id="resMsg" style="text-align:center; margin-top:15px; font-family:'Orbitron'; font-weight:bold;"></div>
         
         <button class="btn-action" id="btnCheck" onclick="checkDate()">VERIFICAR DISPONIBILIDAD</button>
-        <button onclick="sendToWhatsApp()" class="btn-wa" id="btnWa"><i class="fab fa-whatsapp"></i> AGENDAR Y ENVIAR AL GRUPO</button>
+        <button onclick="sendToWhatsApp()" class="btn-wa" id="btnWa"><i class="fab fa-whatsapp"></i> AGENDAR CITA</button>
 
         <div style="margin-top: 20px; font-size: 0.8rem; border: 1px dashed var(--neon-main); padding: 10px; border-radius: 10px; color: #ccc;">
             <i class="fas fa-clock"></i> <b>AVISO IMPORTANTE:</b> Llegar 5 minutos antes. Si llegas tarde, perderás tu lugar y tendras que agendar nuevamente.
@@ -208,47 +208,29 @@
         return;
     }
 
-    // --- DISEÑO PREMIUM ---
-    const msg = `╔════════════════════╗\n` +
-                `      💈 *EDWARD BARBER SHOP* 💈\n` +
-                `╚════════════════════╝\n\n` +
-                `   *RESERVACIÓN CONFIRMADA*\n\n` +
-                `   👤 *CLIENTE:* _${n.toUpperCase()}_\n` +
-                `   📅 *FECHA:* _${d}_\n` +
-                `   ⏰ *HORA:* _${t}_\n\n` +
-                `   📍 *UBICACIÓN:* Zumpango Del Rio\n` +
-                `   ━━━━━━━━━━━━━━━━━━━━\n` +
-                `   ✨ _Favor de llegar 5 min antes._\n` +
-                `   ✨ _¡Te esperamos para el cambio!_`;
+    // Formato moderno: Menos símbolos raros, más claridad
+    const msg = `*💈 EDWARD BARBER SHOP 💈*\n` +
+                `________________________________\n\n` +
+                `✅ *RESERVACIÓN CONFIRMADA*\n\n` +
+                `👤 *CLIENTE:* ${n.toUpperCase()}\n` +
+                `📅 *FECHA:* ${d}\n` +
+                `⏰ *HORA:* ${t}\n\n` +
+                `📍 *LUGAR:* Zumpango Del Rio\n` +
+                `________________________________\n\n` +
+                `⚡ _Favor de llegar 5 min antes por favor._`;
 
-    // --- PASO 1: COPIAR AL PORTAPAPELES (Inmediato para que el cel no lo bloquee) ---
     try {
-        await navigator.clipboard.writeText(msg);
-        console.log("Copiado con éxito");
-    } catch (err) {
-        // Si el navegador es muy viejo, usamos un método alternativo
-        const textArea = document.createElement("textarea");
-        textArea.value = msg;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textArea);
-    }
-
-    // --- PASO 2: GUARDAR EN BASE DE DATOS Y ENVIAR ---
-    try {
-        // Guardamos en Firebase
+        // Se mantiene tu guardado en la base de datos
         await fetch(DB_URL + "citas.json", { 
             method: 'POST', 
             body: JSON.stringify({ name: n, date: d, time: t }) 
         });
 
-        // Mandamos a WhatsApp
-        window.location.href = `${GROUP_LINK}?text=${encodeURIComponent(msg)}`;
+        // Envío directo a WhatsApp
+        window.location.href = `https://wa.me/527471957726?text=${encodeURIComponent(msg)}`;
 
     } catch (e) {
-        // Si falla internet, igual lo mandamos a WhatsApp
-        window.location.href = `${GROUP_LINK}?text=${encodeURIComponent(msg)}`;
+        window.location.href = `https://wa.me/527471957726?text=${encodeURIComponent(msg)}`;
     }
 }
         // --- ADMIN ---
